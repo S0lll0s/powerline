@@ -10,7 +10,6 @@ from threading import Lock, Timer
 from argparse import ArgumentParser
 
 from powerline.lemonbar import LemonbarPowerline
-from powerline.lib.encoding import get_unicode_writer
 
 
 if __name__ == '__main__':
@@ -28,8 +27,6 @@ if __name__ == '__main__':
 		help='The theme to render')
 	args = parser.parse_args()
 	powerline = LemonbarPowerline(theme=args.theme)
-	powerline.update_renderer()
-	powerline.logger.warn("the 'bar' bindings are deprecated, please switch to 'lemonbar'")
 	lock = Lock()
 	modes = ["default"]
 	write = get_unicode_writer(encoding='utf-8')

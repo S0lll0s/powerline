@@ -5,15 +5,12 @@ from powerline.renderer import Renderer
 from powerline.colorscheme import ATTR_UNDERLINE
 
 
-class BarRenderer(Renderer):
-	'''bar (bar ain't recursive) renderer
+class LemonbarRenderer(Renderer):
+	'''lemonbar (formerly bar/bar ain't recursive) renderer
 
 
-	See documentation of `bar <https://github.com/LemonBoy/bar>`_ and :ref:`the usage instructions <bar-usage>`
+	See documentation of `lemonbar <https://github.com/LemonBoy/bar>`_ and :ref:`the usage instructions <lemonbar-usage>`
 	'''
-
-	character_translations = Renderer.character_translations.copy()
-	character_translations[ord('%')] = '%%'
 
 	@staticmethod
 	def hlstyle(*args, **kwargs):
@@ -35,11 +32,12 @@ class BarRenderer(Renderer):
 
 		return text + contents + '%{F-B--u}'
 
-	def render(self, *args, **kwargs):
+	def render(self, output=None, *args, **kwargs):
+		self.segment_info['output'] = output
 		return '%{{l}}{0}%{{r}}{1}'.format(
-			super(BarRenderer, self).render(side='left', *args, **kwargs),
-			super(BarRenderer, self).render(side='right', *args, **kwargs),
+			super(LemonbarRenderer, self).render(side='left', *args, **kwargs),
+			super(LemonbarRenderer, self).render(side='right', *args, **kwargs),
 		)
 
 
-renderer = BarRenderer
+renderer = LemonbarRenderer
