@@ -12,11 +12,11 @@ WORKSPACE_REGEX = re.compile(r'^[0-9]+: ?')
 
 def workspace_groups(w):
 	group = []
-	if w['focused']:
+	if w.focused:
 		group.append('w_focused')
-	if w['urgent']:
+	if w.urgent:
 		group.append('w_urgent')
-	if w['visible']:
+	if w.visible:
 		group.append('w_visible')
 	group.append('workspace')
 	return group
@@ -52,14 +52,17 @@ def workspaces(pl, segment_info, only_show=None, output=None, strip=0):
 
 	return [
 		{
-			'contents': w['name'][strip:],
+			'contents': w.name[strip:],
 			'highlight_groups': workspace_groups(w)
 		}
 		for w in get_i3_connection().get_workspaces()
-		if ((not only_show or any(w[typ] for typ in only_show))
-		    and (not output or w['output'] == output))
+		if ((not only_show or any(getattr(w, typ) for typ in only_show))
+		    and (not output or w.output == output))
 	]
 
+
+class Dummy:
+	pass
 
 @requires_segment_info
 def workspace(pl, segment_info, workspace=None, strip=False):
@@ -80,23 +83,26 @@ def workspace(pl, segment_info, workspace=None, strip=False):
 		try:
 			w = next((
 				w for w in get_i3_connection().get_workspaces()
-				if w['name'] == workspace
+				if w.name == workspace
 			))
 		except StopIteration:
 			return None
 	elif segment_info.get('workspace'):
-		w = segment_info['workspace']
+		w = Dummy()
+		info = segment_info['workspace']
+		for k in info:
+			setattr(w, k, info[k])
 	else:
 		try:
 			w = next((
 				w for w in get_i3_connection().get_workspaces()
-				if w['focused']
+				if w.focused
 			))
 		except StopIteration:
 			return None
 
 	return [{
-		'contents': format_name(w['name'], strip=strip),
+		'contents': format_name(w.name, strip=strip),
 		'highlight_groups': workspace_groups(w)
 	}]
 
@@ -150,6 +156,6 @@ def scratchpad(pl, icons=SCRATCHPAD_ICONS):
 			'contents': icons.get(w.scratchpad_state, icons['changed']),
 			'highlight_groups': scratchpad_groups(w)
 		}
-		for w in get_i3_connection().get_tree().descendents()
+		for w in get_i3_connection().get_tree().descendants()
 		if w.scratchpad_state != 'none'
 	]

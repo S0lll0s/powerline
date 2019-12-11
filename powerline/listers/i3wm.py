@@ -50,12 +50,12 @@ def workspace_lister(pl, segment_info, only_show=None, output=None):
 		(
 			updated(
 				segment_info,
-				output=w['output'],
+				output=w.output,
 				workspace={
-					'name': w['name'],
-					'visible': w['visible'],
-					'urgent': w['urgent'],
-					'focused': w['focused'],
+					'name': w.name,
+					'visible': w.visible,
+					'urgent': w.urgent,
+					'focused': w.focused,
 				},
 			),
 			{
@@ -63,6 +63,6 @@ def workspace_lister(pl, segment_info, only_show=None, output=None):
 			}
 		)
 		for w in get_i3_connection().get_workspaces()
-		if (((not only_show or any(w[typ] for typ in only_show))
-		    and (not output or w['output'] == output)))
+		if (((not only_show or any(getattr(w, typ) for typ in only_show))
+		    and (not output or w.output == output)))
 	)
